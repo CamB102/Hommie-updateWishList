@@ -94,22 +94,26 @@
 						</button>
 						<div class="collapse navbar-collapse justify-content-between"
 							id="navbarCollapse">
+							<c:if test="${not empty user}">
 							<div class="navbar-nav mr-auto py-0">
 								<a href="home" class="nav-item nav-link active">Home</a> <a
-									href="roomList" class="nav-item nav-link">Rooms</a>
-								<c:if test="${not empty user}">
+									href="roomList" class="nav-item nav-link">Rooms</a> <a
+												href="wish-list?command=VIEW_WISH_LIST" class="nav-item nav-link">Wish-list</a>
+								
 									<div class="nav-item dropdown">
 										<a href="#" class="nav-link dropdown-toggle"
 											data-bs-toggle="dropdown"> Hello ${user.firstName}
 											${user.lastName}</a>
 										<div class="dropdown-menu rounded-0 m-0">
-											<a href="logout" class="dropdown-item">Logout</a> <a
-												href="wish-list.jsp" class="dropdown-item">Wish-list(<%= request.getAttribute("wishlistCount") %>)</a>
+											<a href="logout" class="dropdown-item">Logout</a> 
 										</div>
 									</div>
 								</c:if>
 
 								<c:if test="${empty user}">
+								<div class="navbar-nav mr-auto py-0">
+								<a href="home" class="nav-item nav-link active">Home</a> <a
+									href="roomList" class="nav-item nav-link">Rooms</a>
 									<div class="nav-item dropdown">
 										<a href="#" class="nav-link dropdown-toggle"
 											data-bs-toggle="dropdown"> Account</a>

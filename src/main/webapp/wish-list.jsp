@@ -105,7 +105,7 @@
 											href="login.jsp" class="dropdown-item">Login</a> <a
 											href="logout" class="dropdown-item">Logout</a> <a
 											href="wish-list?command=VIEW_WISH_LIST" class="dropdown-item">Wish-list
-											(<%= request.getAttribute("wishlistCount") %>)</a>
+											</a>
 
 									</div>
 								</div>

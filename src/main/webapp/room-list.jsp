@@ -94,22 +94,25 @@
 						<div class="collapse navbar-collapse justify-content-between"
 							id="navbarCollapse">
 							<div class="navbar-nav mr-auto py-0">
+							<c:if test="${not empty user}">
 								<a href="home" class="nav-item nav-link active">Home</a> <a
-									href="roomList" class="nav-item nav-link">Rooms</a>
-								<c:if test="${not empty user}">
+									href="roomList" class="nav-item nav-link">Rooms</a><a
+									href="wish-list?command=VIEW_WISH_LIST"
+									class="nav-item nav-link">Wish-list</a>
+								
 									<div class="nav-item dropdown">
 										<a href="#" class="nav-link dropdown-toggle"
 											data-bs-toggle="dropdown"> Hello ${user.firstName}
 											${user.lastName}</a>
 										<div class="dropdown-menu rounded-0 m-0">
-											<a href="logout" class="dropdown-item">Logout</a> <a
-												href="wish-list?command=VIEW_WISH_LIST"
-												class="dropdown-item">Wish-list (${empty sessionScope.wishList? 0 : sessionScope.wishList.size()})</a>
+											<a href="logout" class="dropdown-item">Logout</a>
 										</div>
 									</div>
 								</c:if>
 
 								<c:if test="${empty user}">
+								<a href="home" class="nav-item nav-link active">Home</a> <a
+									href="roomList" class="nav-item nav-link">Rooms</a>
 									<div class="nav-item dropdown">
 										<a href="#" class="nav-link dropdown-toggle"
 											data-bs-toggle="dropdown"> Account</a>
@@ -285,6 +288,11 @@
 												type="button" value="Add"
 												onclick="window.location.href='wish-list?command=ADD_TO_WISH_LIST&roomId=${room.id}'"
 												class="btn btn-sm btn-primary rounded py-2 px-4" />
+											<c:if test="${not empty errorMessage}">
+												<script>
+													alert("${errorMessage}");
+												</script>
+											</c:if>
 
 										</div>
 									</div>

@@ -41,58 +41,73 @@ public class WishListServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		try {
+			HttpSession session = request.getSession();
+			WishListService wishListService = new WishListService();
+			int studentId = 0;
+
+	        // Check if the user is logged in
+	        if (session.getAttribute("studentId") != null) {
+	            studentId = (int) session.getAttribute("studentId");
+	        } else {
+	            // If the user is not logged in, redirect to the login page
+	            response.sendRedirect("login.jsp");
+	            return;
+	        }
+
 			String command = request.getParameter("command");
 			int roomId = 0;
 			RoomService roomService = new RoomService();
-			HttpSession session = request.getSession();
-			WishListService wishListService = new WishListService();
-			int studentId = (int) session.getAttribute("studentId");
-
-			if (session == null || session.getAttribute("studentId") == null) {
-				response.sendRedirect("login.jsp");
-				return;
-			}
 
 			// Show wish list
 			if (command != null && command.equals("VIEW_WISH_LIST")) {
 				List<Room> wishList = wishListService.getWishListByStudentId(studentId);
-				// count items
-				int wishlistCount = wishListService.getWishListCount(studentId);
 
-				request.setAttribute("wishlistCount", wishlistCount);
 				request.setAttribute("wishList", wishList);
 				request.getRequestDispatcher("wish-list.jsp").forward(request, response);
-				request.getRequestDispatcher("home.jsp").forward(request, response);
 				return; // Exit the method after displaying the wishlist
 			}
 
-			Map<Integer, WishListItem> wishListMap = (Map<Integer, WishListItem>) session.getAttribute("wishList");
-
-			if (wishListMap == null) {
-				wishListMap = new HashMap<Integer, WishListItem>();
-			}
-
+			// Add to wish list
 			if (command != null && command.equals("ADD_TO_WISH_LIST")) {
 				roomId = Integer.parseInt(request.getParameter("roomId"));
 				Room room = roomService.getRoomDetails(roomId);
 
-				WishListItem wishlistItem = new WishListItem(room, studentId);
-				wishListMap.put(room.getId(), wishlistItem);
+				 //Check if roomId already exists in the wishlist
+				Map<Integer, WishListItem> wishListMap = (Map<Integer, WishListItem>) session.getAttribute("wishList");
+				if (wishListMap == null) {
+			        wishListMap = new HashMap<>();
+			    }
 
-				// Insert wishList into database
-				wishListService.insertWishListItems(wishListMap);
+				// Check if the room is already in the wishlist for this student
+	            if (wishListService.isRoomInWishlist(studentId, roomId)) {
+	                // If the room is already in the wishlist, set an error message
+	                String errorMessage = "Room is already in the wishlist.";
+	                request.setAttribute("errorMessage", errorMessage);
+	            } else {
+	                // If the room is not in the wishlist, then add it to the wishlist and database
+	                WishListItem wishlistItem = new WishListItem(room, studentId);
+	                wishListMap.put(room.getId(), wishlistItem);
 
-				session.setAttribute("wishList", wishListMap);
-				request.setAttribute("room", room);
+	                // Insert wishList into database
+	                wishListService.insertWishListItems(wishListMap);
+	            }
+	            
+			    session.setAttribute("wishList", wishListMap);
+			    request.setAttribute("room", room);
 
-				// Redirect back to the wishlist after adding an item
-				response.sendRedirect("roomList");
-			} else if (command != null && command.equals("REMOVE")) {
+			    // Redirect back to the wishlist after adding an item
+			    response.sendRedirect("roomList");
+
+			}
+
+			// Remove from wish list
+			if (command != null && command.equals("REMOVE")) {
 				roomId = Integer.parseInt(request.getParameter("roomId"));
 				wishListService.deleteWishListItem(studentId, roomId);
 
 				// Redirect back to the wishlist after removing an item
 				response.sendRedirect("wish-list?command=VIEW_WISH_LIST");
+				return;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

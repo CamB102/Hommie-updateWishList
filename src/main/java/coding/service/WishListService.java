@@ -50,8 +50,40 @@ public class WishListService {
 				conn.close();
 			}
 		}
-
+		System.out.println("Insert sucessfully");
 		return insertedId;
+	}
+	
+	public boolean isRoomInWishlist(int studentId, int roomId) throws SQLException {
+	    Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    boolean roomExists = false;
+
+	    try {
+	        conn = DBUtil.makeConnection();
+	        ps = conn.prepareStatement("SELECT COUNT(*) AS count FROM wishlist WHERE student_id = ? AND room_id = ?");
+	        ps.setInt(1, studentId);
+	        ps.setInt(2, roomId);
+	        rs = ps.executeQuery();
+
+	        if (rs.next()) {
+	            int count = rs.getInt("count");
+	            roomExists = count > 0;
+	        }
+	    } finally {
+	        if (rs != null) {
+	            rs.close();
+	        }
+	        if (ps != null) {
+	            ps.close();
+	        }
+	        if (conn != null) {
+	            conn.close();
+	        }
+	    }
+
+	    return roomExists;
 	}
 
 	public List<Room> getWishListByStudentId(Integer studentId) throws SQLException {
@@ -99,67 +131,43 @@ public class WishListService {
 	}
 
 	public void deleteWishListItem(Integer studentId, Integer roomId) throws SQLException {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
+	    Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
+	    System.out.println("delete roomId and student id" + studentId + roomId);
 
-		try {
-//			make connection to mySQL
-			conn = DBUtil.makeConnection();
-			ps = conn
-					.prepareStatement("DELETE FROM wishlist\n" + "WHERE student_id = ? AND room_id = ?\n" + "LIMIT 1;");
-			ps.setInt(1, studentId);
-			ps.setInt(2, roomId);
-			rs = ps.executeQuery();
+	    try {
+	        // Make connection to MySQL
+	        conn = DBUtil.makeConnection();
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (ps != null) {
-				ps.close();
-			}
-			if (conn != null) {
-				conn.close();
-			}
-			System.out.println("Delete sucessfully");
-		}
+	        // Set SQL_SAFE_UPDATES to 0 to include the SAFE_UPDATES option
+	        PreparedStatement setSafeUpdates = conn.prepareStatement("SET SQL_SAFE_UPDATES = 0;");
+	        setSafeUpdates.execute();
+
+	        ps = conn.prepareStatement("DELETE FROM wishlist\n" + "WHERE student_id = ? AND room_id = ?\n" + ";");
+	        ps.setInt(1, studentId);
+	        ps.setInt(2, roomId);
+	        int rowsAffected = ps.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (rs != null) {
+	            rs.close();
+	        }
+	        if (ps != null) {
+	            ps.close();
+	        }
+	        if (conn != null) {
+	            conn.close();
+	        }
+
+	        // Reset SQL_SAFE_UPDATES to 1 (enabled) after executing the query
+	        Connection resetConn = DBUtil.makeConnection();
+	        PreparedStatement resetSafeUpdates = resetConn.prepareStatement("SET SQL_SAFE_UPDATES = 1;");
+	        resetSafeUpdates.execute();
+	        resetConn.close();
+	    }
 	}
-
-	public int getWishListCount(Integer studentId) throws SQLException {
-		Connection conn = null;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		int wishlistCount = 0;
-
-		try {
-			// Make connection to MySQL
-			conn = DBUtil.makeConnection();
-			ps = conn.prepareStatement("SELECT COUNT(*) AS wishlist_count FROM wishlist WHERE student_id = ?");
-			ps.setInt(1, studentId);
-
-			rs = ps.executeQuery();
-
-			if (rs.next()) {
-
-				wishlistCount = rs.getInt("wishlist_count");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (rs != null) {
-				rs.close();
-			}
-			if (ps != null) {
-				ps.close();
-			}
-			if (conn != null) {
-				conn.close();
-			}
-			System.out.println("Query executed successfully");
-		}
-		return wishlistCount;
-	}
+	
 }
