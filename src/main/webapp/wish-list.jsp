@@ -105,7 +105,7 @@
 											href="login.jsp" class="dropdown-item">Login</a> <a
 											href="logout" class="dropdown-item">Logout</a> <a
 											href="wish-list?command=VIEW_WISH_LIST" class="dropdown-item">Wish-list
-											(${empty sessionScope.wishList? 0 : sessionScope.wishList.size()})</a>
+											(<%= request.getAttribute("wishlistCount") %>)</a>
 
 									</div>
 								</div>
@@ -205,28 +205,28 @@
 							<div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
 								<div class="room-item shadow rounded overflow-hidden">
 									<div class="position-relative">
-										<img class="img-fluid" src="${room.value.image1Url}"
+										<img class="img-fluid" src="${room.image1Url}"
 											alt="image-room"> <small
-											class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$${room.value.price}/Week</small>
+											class="position-absolute start-0 top-100 translate-middle-y bg-primary text-white rounded py-1 px-3 ms-4">$${room.price}/Week</small>
 									</div>
 									<div class="p-4 mt-2">
 										<div class="d-flex justify-content-between mb-3">
-											<h5 class="mb-0">${room.value.title}</h5>
+											<h5 class="mb-0">${room.title}</h5>
 											<div class="ps-2"></div>
 										</div>
 										<div class="d-flex mb-3">
 											<small class="border-end me-3 pe-3"><i
-												class="fa fa-bed text-primary me-2"></i>${room.value.countBed}
+												class="fa fa-bed text-primary me-2"></i>${room.countBed}
 												Bed</small> <small class="border-end me-3 pe-3"><i
-												class="fa fa-bath text-primary me-2"></i>${room.value.countBath}
+												class="fa fa-bath text-primary me-2"></i>${room.countBath}
 												Bath</small> <small><i class="fa fa-wifi text-primary me-2"></i>Wifi</small>
 										</div>
-										<p class="text-body mb-3">${room.value.description}</p>
+										<p class="text-body mb-3">${room.description}</p>
 										<div class="d-flex justify-content-between">
 											<a class="btn btn-sm btn-primary rounded py-2 px-4"
-												href="room?roomId=${room.value.id}">View Detail</a> <a
+												href="room?roomId=${room.id}">View Detail</a> <a
 												class="btn btn-sm btn-primary rounded py-2 px-4"
-												href="wish-list?command=REMOVE&roomId=${room.key}">Remove</a>
+												href="wish-list?command=REMOVE&roomId=${room.id}">Remove</a>
 
 										</div>
 									</div>

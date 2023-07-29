@@ -104,7 +104,7 @@
 											${user.lastName}</a>
 										<div class="dropdown-menu rounded-0 m-0">
 											<a href="logout" class="dropdown-item">Logout</a> <a
-												href="wish-list.jsp" class="dropdown-item">Wish-list</a>
+												href="wish-list.jsp" class="dropdown-item">Wish-list(<%= request.getAttribute("wishlistCount") %>)</a>
 										</div>
 									</div>
 								</c:if>
